@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creador de Estructura de Carpetas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #007bff;
+        }
+        .card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            text-align: left;
+            box-sizing: border-box;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            color: #555;
+        }
+        input[type="number"],
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+        input[type="number"]:focus,
+        input[type="text"]:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+            box-sizing: border-box;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #777;
+        }
+        .thanks {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 16px;
+            color: #28a745;
+            display: none;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+</head>
+<body>
+    <h1><i class="fas fa-folder-plus"></i> Creador de Estructura de Carpetas</h1>
+    <div class="card">
+        <form id="folderForm">
+            <label for="year">Año:</label>
+            <input type="number" id="year" value="2025" required>
+
+            <label for="months">Meses (separados por comas):</label>
+            <input type="text" id="months" value="Enero, Febrero, Marzo, Abril, Mayo, Junio, Julio, Agosto, Septiembre, Octubre, Noviembre, Diciembre" required>
+
+            <label for="subfolders">Subcarpetas (separadas por comas):</label>
+            <input type="text" id="subfolders" value="LALBC01, LALBC02, LALBC03, LALBC04, LALBC05, LALBC06, LALBC07, ANCBC06" required>
+
+            <button type="submit"><i class="fas fa-download"></i> Descargar Carpeta</button>
+        </form>
+        <div class="thanks" id="thanksMessage">¡Gracias, Miguel Fajardo! Tu carpeta ha sido creada.</div>
+    </div>
+    <div class="footer">
+        &copy; 2024 Estructura de Carpetas - Miguel Fajardo. Todos los derechos reservados.
+    </div>
+
+    <script>
+        document.getElementById('folderForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            createZip();
+        });
+
+        function createZip() {
+            const zip = new JSZip();
+            const year = document.getElementById('year').value;
+            const monthsInput = document.getElementById('months').value;
+            const subfoldersInput = document.getElementById('subfolders').value;
+
+            const months = monthsInput.split(',').map(month => month.trim());
+            const subfolders = subfoldersInput.split(',').map(folder => folder.trim());
+
+            const folderName = `Estructura_Carpeta_${year}`;
+            months.forEach(month => {
+                const monthFolder = zip.folder(`${year}/${month}`);
+                subfolders.forEach(subfolder => {
+                    const subfolderDir = monthFolder.folder(subfolder);
+                    subfolderDir.file('archivo.txt', ''); // Archivo en blanco
+                });
+            });
+
+            zip.generateAsync({ type: 'blob' })
+                .then(content => {
+                    saveAs(content, `${folderName}.zip`);
+                    document.getElementById('thanksMessage').style.display = 'block';
+                });
+        }
+    </script>
+</body>
+</html>
